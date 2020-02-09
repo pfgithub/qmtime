@@ -1,0 +1,8 @@
+[Xfce Panel]
+Type=X-XFCE-PanelPlugin
+Name=Ten Hour Time
+Comment=Ten hour time plugin
+Icon=xfce-schedule
+X-XFCE-Module=tenhourtime
+X-XFCE-Internal=false
+X-XFCE-API=2.0
