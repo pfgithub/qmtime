@@ -4,8 +4,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#define LOCAL_OFFSET -8;
-
 // kind of works maybe
 int64_t tenhourtime() {
   int localoffset = LOCAL_OFFSET;
@@ -16,14 +14,12 @@ int64_t tenhourtime() {
   time_t sec = res.tv_sec;
   int64_t ms = res.tv_sec * 1000 + (res.tv_nsec / 1000000);
 
-  struct tm *currenttimeutc =
-      gmtime(&sec); // this is the same as currenttime for some reason?
-  struct tm *currenttime = localtime(&sec);
+  struct tm *currenttime = gmtime(&sec);
   currenttime->tm_hour = 0;
   currenttime->tm_min = 0;
   currenttime->tm_sec = 0;
-  time_t daystart = mktime(currenttime);
-  int64_t daystart_ms = (daystart - localoffset * 60 * 60 * 2) * 1000;
+  time_t daystart = timegm(currenttime);
+  int64_t daystart_ms = daystart * 1000;
 
   int64_t diff = ms - daystart_ms;
   double diffd = diff;

@@ -2,10 +2,6 @@
 
 time with 100LL instead of 24 hours in a day. value is the % of the day gone by in utc time. 23LL = 23% of the 24-hour day has gone by in utc time
 
-## config
-
-edit `src/tenhourtime.c` and change LOCAL_OFFSET to your timezone offset. Compile and run command line and check that the time it shows is the same as [https://pfg.pw/sitepages/tenhourtime](https://pfg.pw/sitepages/tenhourtime).
-
 ## xfce panel
 
 ```bash
