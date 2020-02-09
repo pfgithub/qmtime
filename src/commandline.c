@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
   }
 
   do {
-    int64_t currenttime = tenhourtime(-8);
+    int64_t currenttime = tenhourtime();
 
     if (forever) {
       printf("\r");

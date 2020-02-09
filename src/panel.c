@@ -12,7 +12,7 @@ gboolean updateTime(gpointer data) {
   struct updatedata *data = (struct updatedata *)data;
   GtkTextBuffer *buffer = data->buffer;
 
-  struct tht_time sepertime = seperatetime(tenhourtime(-8));
+  struct tht_time sepertime = seperatetime(tenhourtime());
 
   char *resstr = data->resstr;
   // sprintf(resstr, "%02dLL %02dcc %02dii %02dqm", sepertime.LL, sepertime.cc,
