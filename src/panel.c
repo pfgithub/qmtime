@@ -5,11 +5,13 @@ static void constructor(XfcePanelPlugin *plugin);
 XFCE_PANEL_PLUGIN_REGISTER(constructor);
 
 struct updatedata {
-  GtkTextBuffer *buffer, char *resstr,
+  GtkTextBuffer *buffer;
+  char *resstr;
+  int previi;
 };
 
-gboolean updateTime(gpointer data) {
-  struct updatedata *data = (struct updatedata *)data;
+gboolean updateTime(gpointer anydata) {
+  struct updatedata *data = (struct updatedata *)anydata;
   GtkTextBuffer *buffer = data->buffer;
 
   struct tht_time sepertime = seperatetime(tenhourtime());
@@ -17,11 +19,13 @@ gboolean updateTime(gpointer data) {
   char *resstr = data->resstr;
   // sprintf(resstr, "%02dLL %02dcc %02dii %02dqm", sepertime.LL, sepertime.cc,
   //         sepertime.ii, sepertime.qm);
-  sprintf(resstr, "%02dLL %02dcc %02dii", sepertime.LL, sepertime.cc,
-          (sepertime.ii / 10) * 10);
-  gtk_text_buffer_set_text(buffer, resstr, -1);
-  free(resstr);
 
+  if (data->previi != sepertime.ii) {
+    data->previi = sepertime.ii;
+    sprintf(resstr, "%02dLL %02dcc %02dii", sepertime.LL, sepertime.cc,
+            (sepertime.ii / 10) * 10);
+    gtk_text_buffer_set_text(buffer, resstr, -1);
+  }
   return TRUE;
 }
 
@@ -36,9 +40,10 @@ static void constructor(XfcePanelPlugin *plugin) {
 
   gtk_widget_show_all(view);
 
-  struct updatedata data = malloc(sizeof(updatedata));
+  struct updatedata *data = malloc(sizeof(struct updatedata));
   data->resstr = (char *)malloc(100 * sizeof(char));
   data->buffer = buffer;
+  data->previi = 0;
 
-  g_timeout_add(100, updateTime, data);
+  g_timeout_add(10, updateTime, data);
 }

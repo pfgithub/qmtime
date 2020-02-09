@@ -6,8 +6,6 @@
 
 // kind of works maybe
 int64_t tenhourtime() {
-  int localoffset = LOCAL_OFFSET;
-
   struct timespec res;
   clock_gettime(CLOCK_REALTIME, &res);
 
