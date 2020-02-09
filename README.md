@@ -1,6 +1,6 @@
 # tenhourtime
 
-time with 100LL instead of 24 hours in a day. always utc except not because mktime. value is the % of the day gone by in utc time. 23LL = 23% of the 24-hour day has gone by in utc time.
+time with 100LL instead of 24 hours in a day. value is the % of the day gone by in utc time. 23LL = 23% of the 24-hour day has gone by in utc time
 
 ## config
 
@@ -8,7 +8,7 @@ edit `src/tenhourtime.c` and change LOCAL_OFFSET to your timezone offset. Compil
 
 ## xfce panel
 
-```
+```bash
 ./build.sh
 sudo ./install.sh
 ```
@@ -21,7 +21,7 @@ this panel is very cpu intensive (uses 0.8% cpu and is in my top 15 things by cp
 
 ## command line
 
-```
+```bash
 mkdir -p dist
 gcc src/commandline.c -o dist/tenhourtime && ./dist/tenhourtime
 ```
