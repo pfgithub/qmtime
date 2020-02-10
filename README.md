@@ -5,9 +5,7 @@ time with 100LL instead of 24 hours in a day. value is the % of the day gone by 
 ## requirements
 
 - zig version 0.5.0+357f42da6
-- node >=8
 - libc
-- pkg-config
 - gtk 3
 - libxfce4panel
 - sh
@@ -17,7 +15,7 @@ time with 100LL instead of 24 hours in a day. value is the % of the day gone by 
 check the install script and make sure it is installing to the right place on your system.
 
 ```bash
-node genbuild.js && zig build panel && sudo ./install.sh
+zig build panel && sudo ./install.sh
 ```
 
 add the panel in xfce
@@ -29,5 +27,5 @@ more about panels: [https://wiki.xfce.org/dev/howto/panel_plugins](https://wiki.
 ## command line
 
 ```bash
-node genbuild.js && zig build cli && ./zig-cache/bin/tenhourtime
+zig build cli && ./zig-cache/bin/tenhourtime
 ```

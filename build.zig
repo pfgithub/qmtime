@@ -2,7 +2,7 @@ const std = @import("std");
 const Builder = std.build.Builder;
 
 pub fn build(b: *Builder) void {
-    const fmt = b.addFmt(&[_][]const u8{ "src", "template_build.zig" });
+    const fmt = b.addFmt(&[_][]const u8{ "src", "build.zig" });
 
     {
         const panel = b.step("panel", "Build panel");
@@ -11,9 +11,8 @@ pub fn build(b: *Builder) void {
         const lib = b.addSharedLibrary("tenhourtime", "src/panel.zig", b.version(1, 0, 0));
         lib.setBuildMode(mode);
         lib.linkLibC();
-        @compileError("genbuild.js");
-        lib.addIncludeDir("/usr/include/xfce4/libxfce4panel-1.0");
-        lib.addIncludeDir("/usr/include");
+        lib.linkSystemLibrary("gtk+-3.0");
+        lib.linkSystemLibrary("libxfce4panel-1.0");
 
         lib.install();
 
