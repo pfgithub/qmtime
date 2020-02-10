@@ -42,15 +42,15 @@ pub fn build(b: *Builder) void {
         runCli.dependOn(cli);
         runCli.dependOn(&runCmd.step);
     }
-    
+
     {
         var testc = b.step("test", "Test code");
-        
+
         const mode = b.standardReleaseOptions();
         const t = b.addTest("src/tenhourtime.zig");
         t.setBuildMode(mode);
         t.linkLibC();
-        
+
         testc.dependOn(&t.step);
     }
 }

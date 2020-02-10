@@ -14,7 +14,7 @@ function exec(cmd) {
 (async () => {
   let res = [
     ...new Set([
-      ...(await exec("pkg-config --cflags --libs gtk+-3.0")).split(" "),
+      ...(await exec("pkg-config --cflags --libs gtk+-3.0")).split(" ")
       // ...(await exec("pkg-config --cflags --libs libxfce4panel-1.0")).split(" ")
       // ^ for some reason, that one causes a compile error
     ])
