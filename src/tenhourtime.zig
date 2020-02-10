@@ -30,29 +30,29 @@ pub fn tenHourTime(timeMs: u64) u64 {
 }
 
 pub const TenHourTime = struct {
-    LL: u8,
+    LL: u32,
     cc: u8,
     ii: u8,
-    qm: u8,
+    qm: u16,
     pub fn format(timeData: *const TenHourTime, comptime fmt: []const u8, options: std.fmt.FormatOptions, context: var, comptime Errors: type, output: fn (@TypeOf(context), []const u8) Errors!void) Errors!void {
-        return std.fmt.format(context, Errors, output, "{:0>2}LL {:0>2}cc {:0>2}ii {:0>2}qm", .{ timeData.LL, timeData.cc, timeData.ii, timeData.qm });
+        return std.fmt.format(context, Errors, output, "{:0>2}LL {:0>1}cc {:0>2}ii {:0>3}qm", .{ timeData.LL, timeData.cc, timeData.ii, timeData.qm });
     }
 };
 
 /// seperate out tenhourtime into LL,cc,ii,qm
 pub fn formatTime(tht: u64) TenHourTime {
     return .{
-        .LL = @intCast(u8, (tht / 1000000) % 100),
-        .cc = @intCast(u8, (tht / 10000) % 100),
-        .ii = @intCast(u8, (tht / 100) % 100),
-        .qm = @intCast(u8, (tht / 1) % 100),
+        .LL = @intCast(u32, (tht / 1000000) % 100),
+        .cc = @intCast(u8, (tht / 100000) % 10),
+        .ii = @intCast(u8, (tht / 1000) % 100),
+        .qm = @intCast(u16, (tht / 1) % 1000),
     };
 }
 
 test "the time is correct" {
     var value = formatTime(tenHourTime(1581354755886));
     std.testing.expect(value.LL == 71);
-    std.testing.expect(value.cc == 70);
-    std.testing.expect(value.ii == 82);
-    std.testing.expect(value.qm == 01);
+    std.testing.expect(value.cc == 7);
+    std.testing.expect(value.ii == 08);
+    std.testing.expect(value.qm == 201);
 }

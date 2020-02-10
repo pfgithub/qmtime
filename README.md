@@ -1,6 +1,6 @@
 # tenhourtime
 
-time with 100LL instead of 24 hours in a day. value is the % of the day gone by in utc time. 23LL = 23% of the 24-hour day has gone by in utc time
+time with 100LL instead of 24 hours in a day. value is the time since the utc day started. 23LL = 23% of the 24-hour day has gone by in utc time
 
 ## requirements
 
@@ -28,4 +28,10 @@ more about panels: [https://wiki.xfce.org/dev/howto/panel_plugins](https://wiki.
 
 ```bash
 zig build cli && ./zig-cache/bin/tenhourtime
+```
+
+## tests
+
+```bash
+zig build test
 ```

@@ -21,7 +21,6 @@ const EachTick = extern struct {
         data.index = 0;
         var timeNum = tht.formatTime(tht.tenHourTime(tht.getTime()));
         timeNum.qm = 0;
-        timeNum.ii = timeNum.ii / 10 * 10;
 
         if (data.previi != timeNum.ii) {
             data.previi = timeNum.ii;
