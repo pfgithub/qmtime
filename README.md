@@ -2,26 +2,32 @@
 
 time with 100LL instead of 24 hours in a day. value is the % of the day gone by in utc time. 23LL = 23% of the 24-hour day has gone by in utc time
 
+## requirements
+
+- zig version 0.5.0+357f42da6
+- node >=8
+- libc
+- pkg-config
+- gtk 3
+- libxfce4panel
+- sh
+
 ## xfce panel
 
+check the install script and make sure it is installing to the right place on your system.
+
 ```bash
-./build.sh
-sudo ./install.sh
+node genbuild.js && zig build panel && sudo ./install.sh
 ```
 
 add the panel in xfce
 
-panel will auto-update on reinstall. if it errors, click execute.
+panel will auto-update on reinstall (you might have to right click on the panel before xfce notices ther is a new version). if it errors, click execute. If it errors again, check the xfce4-panel logs.
 
-this panel is very cpu intensive (uses 0.8% cpu and is in my top 15 things by cpu usage while no other panel plugins are). I'm probably doing something wrong.
+more about panels: [https://wiki.xfce.org/dev/howto/panel_plugins](https://wiki.xfce.org/dev/howto/panel_plugins)
 
 ## command line
 
 ```bash
-mkdir -p dist
-gcc src/commandline.c -o dist/tenhourtime && ./dist/tenhourtime
+node genbuild.js && zig build cli && ./zig-cache/bin/tenhourtime
 ```
-
-## formatting code
-
-format code with `clang-format -i src/*.c`

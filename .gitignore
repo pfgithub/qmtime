@@ -1,2 +1,4 @@
 junk
-dist
+old
+zig-cache
+build.zig
