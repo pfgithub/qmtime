@@ -20,11 +20,16 @@ pub fn getDayStart(time: u64) u64 {
     return dayStartSec * 1000;
 }
 
-/// convert ms time to tenhourtime
-pub fn tenHourTime(timeMs: u64) u64 {
+/// get the time since the start of the day
+pub fn msSinceDayStart(timeMs: u64) u64 {
     const dayStart = getDayStart(timeMs);
-    const msSinceDayStart = timeMs -% dayStart; // in case dayStart > timeMs, make random output instead of crashing.
-    const floatMsSinceDayStart: f64 = @intToFloat(f64, msSinceDayStart);
+    const msSinceDayStartV = timeMs -% dayStart;
+    return msSinceDayStartV;
+}
+
+/// convert ms time to tenhourtime
+pub fn tenHourTime(msSinceDayStartV: u64) u64 {
+    const floatMsSinceDayStart: f64 = @intToFloat(f64, msSinceDayStartV);
     const number: f64 = (24.0 * 60.0 * 60.0 * 1000.0) / 100000000.0;
     return @floatToInt(u64, floatMsSinceDayStart / number);
 }
@@ -50,7 +55,7 @@ pub fn formatTime(tht: u64) TenHourTime {
 }
 
 test "the time is correct" {
-    var value = formatTime(tenHourTime(1581354755886));
+    var value = formatTime(tenHourTime(timeSinceDayStart(1581354755886)));
     std.testing.expect(value.LL == 71);
     std.testing.expect(value.cc == 7);
     std.testing.expect(value.ii == 08);
