@@ -2,6 +2,8 @@
 
 time with 100LL instead of 24 hours in a day. value is the time since the utc day started. 23LL = 23% of the 24-hour day has gone by in utc time
 
+![screenshot showing the panel](https://i.imgur.com/hLNn93A.jpg)
+
 ## requirements
 
 - zig version 0.5.0+357f42da6
@@ -35,3 +37,8 @@ zig build cli && ./zig-cache/bin/tenhourtime
 ```bash
 zig build test
 ```
+
+## todo
+
+- vertical centering
+- popup panel to calculate things
