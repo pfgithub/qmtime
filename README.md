@@ -2,7 +2,7 @@
 
 time with 100LL instead of 24 hours in a day. [unit conversions](https://pfg.pw/sitepages/unitconv).
 
-![screenshot showing the panel](https://i.imgur.com/hLNn93A.jpg)
+![screenshot showing the panel](https://i.imgur.com/qWjqVZr.png)
 
 ## requirements
 
