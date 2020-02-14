@@ -11,7 +11,6 @@ pub fn getTime() u64 {
 /// get start of day in utc using time.h gmtime/timegm
 pub fn getDayStart(time: u64) u64 {
     const timeSec: c.time_t = @intCast(c.time_t, time / 1000);
-    // @compileLog(@TypeOf(&timeSec)); // this is one way to implement a hover provider in the stage1 compiler. add a @compilelog statement and check the error.
     var timeInfo = c.gmtime(&timeSec);
     timeInfo.*.tm_hour = 0;
     timeInfo.*.tm_min = 0;
