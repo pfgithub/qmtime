@@ -1,6 +1,6 @@
 # tenhourtime
 
-time with 100LL instead of 24 hours in a day. value is the time since the utc day started. 23LL = 23% of the 24-hour day has gone by in utc time
+time with 100LL instead of 24 hours in a day. [unit conversions](https://pfg.pw/sitepages/unitconv).
 
 ![screenshot showing the panel](https://i.imgur.com/hLNn93A.jpg)
 
