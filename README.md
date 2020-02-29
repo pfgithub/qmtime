@@ -4,7 +4,7 @@ time with 100LL instead of 24 hours in a day. value is the time since the utc da
 
 ## requirements
 
-- zig version 0.5.0+357f42da6
+- zig version 0.5.0+058f38220
 - libc
 - gtk 3
 - libxfce4panel

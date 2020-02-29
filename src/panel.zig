@@ -39,9 +39,9 @@ const EachTick = extern struct {
 pub fn constructor(plugin: [*c]c.XfcePanelPlugin) void {
     var view = c.gtk_text_view_new();
 
-    var buffer = c.gtk_text_view_get_buffer(gtkTextView(view));
+    var buffer = c.gtk_text_view_get_buffer(c.GTK_TEXT_VIEW(view));
     c.gtk_text_buffer_set_text(buffer, "Zig! 2", -1);
-    c.gtk_container_add(gtkContainer(plugin), view);
+    c.gtk_container_add(c.GTK_CONTAINER(plugin), view);
     c.gtk_widget_show_all(view);
 
     var str = [_:0]u8{
@@ -63,19 +63,6 @@ pub fn constructor(plugin: [*c]c.XfcePanelPlugin) void {
 
     var result = c.g_timeout_add(10, EachTick.update, updateData);
 }
-
-// ===== MACRO EXPANSION FOR c.GTK_TEXT_VIEW() and c.GTK_CONTAINER() . These should be able to parse but translate-c doesn't know how yet. I'm guessing it sees too many ((((parenthesis around(((((arguments)), ((((((((and))))))))))))))) isn't sure what to do
-fn gtkTextView(view: [*c]c.GtkWidget) *c.GtkTextView { // c.GTK_TEXT_VIEW
-    return @ptrCast(*c.GtkTextView, c.g_type_check_instance_cast(@ptrCast(*c.GTypeInstance, view), c.gtk_text_view_get_type()));
-}
-
-fn gtkContainer(view: [*c]c.XfcePanelPlugin) *c.GtkContainer {
-    return @ptrCast(*c.GtkContainer, c.g_type_check_instance_cast(@ptrCast(*c.GTypeInstance, view), c.gtk_container_get_type()));
-}
-
-// fn gtkType(comptime intype: type, view: var, comptime getType: fn() callconv(.C) c_ulong) *@TypeOf(intype) { // replacement for GTK_TEXT_VIEW macro that has way too many parenthesis
-//     return @ptrCast(*intype, c.g_type_check_instance_cast(@ptrCast(*c.GTypeInstance, view), getType()));
-// }
 
 // ========== MACRO EXPANSION FOR XFCE_PANEL_PLUGIN_REGISTER ==========
 // even if zig could parse the macro, how would it add two functions?
