@@ -8,12 +8,16 @@ const PrintMode = enum {
 const TimeToGet = union(enum) {
     Current: void,
     MsSinceEpoch: u64,
-    MsSinceDayStart: u4,
+    MsSinceDayStart: u64,
 };
 
 // stdout shouldn't be var here, that doesn't make sense vvvv
 fn printTime(stdout: var, timeToGet: TimeToGet, mode: PrintMode) !void {
-    const timeNum = tht.tenHourTime(tht.getTime());
+    const timeNum = tht.tenHourTime(switch (timeToGet) {
+        .Current => tht.msSinceDayStart(tht.getTime()),
+        .MsSinceEpoch => |ms| tht.msSinceDayStart(ms),
+        .MsSinceDayStart => |ms| ms,
+    });
     switch (mode) {
         .Formatted => {
             const timeData = tht.formatTime(timeNum);
@@ -54,6 +58,8 @@ pub fn main() !void {
                     "-m        | select mode\n" ++
                     "-m raw    | print raw value, eg: `19079284`\n" ++
                     "-m format | [default] print formatted time, eg: `19LL 07cc 92ii 84qm`\n" ++
+                    "--ms 1234 | get the time of a specific ms duration\n" ++
+                    "--time 84 | get the time of a specific ms since epoch\n" ++
                     "--update  | run until ctrl+c\n", .{});
                 return;
             } else if (std.mem.eql(u8, arg, "-m")) {
@@ -71,6 +77,18 @@ pub fn main() !void {
                 }
             } else if (std.mem.eql(u8, arg, "--update")) {
                 lifetime = .Forever;
+            } else if (std.mem.eql(u8, arg, "--ms")) {
+                var nextStr = try (args.next(allocator) orelse {
+                    std.debug.warn("missing --ms time", .{});
+                    return error.MissingMSTime;
+                });
+                timeToGet = TimeToGet{ .MsSinceDayStart = try std.fmt.parseUnsigned(u64, nextStr, 10) };
+            } else if (std.mem.eql(u8, arg, "--time")) {
+                var nextStr = try (args.next(allocator) orelse {
+                    std.debug.warn("missing --time time", .{});
+                    return error.MissingTimeTime;
+                });
+                timeToGet = TimeToGet{ .MsSinceEpoch = try std.fmt.parseUnsigned(u64, nextStr, 10) };
             } else {
                 std.debug.warn("Invalid argument {}. See --help\n", .{arg});
                 return error.InvalidArgument;

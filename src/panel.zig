@@ -11,7 +11,7 @@ const EachTick = extern struct {
     pub const Error = OverflowError;
     fn update(anydata: c.gpointer) callconv(.C) c_int {
         var data: *align(1) EachTick = @ptrCast(*align(1) EachTick, anydata);
-        var timeNum = tht.formatTime(tht.tenHourTime(tht.getTime()));
+        var timeNum = tht.formatTime(tht.tenHourTime(tht.msSinceDayStart(tht.getTime())));
         timeNum.qm = 0;
 
         if (data.previi != timeNum.ii) {
