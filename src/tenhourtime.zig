@@ -41,7 +41,7 @@ pub const TenHourTime = struct {
     ii: u8,
     qm: u16,
     pub fn format(timeData: *const TenHourTime, comptime fmt: []const u8, options: std.fmt.FormatOptions, out: var) !void {
-        return std.fmt.format(out, "{:0>2}LL {:0>1}cc {:0>2}ii {:0>3}qm", .{ timeData.LL, timeData.cc, timeData.ii, timeData.qm });
+        return std.fmt.format(out, "{:0>2}.{:0>1}LL {:0>2}.{:0>3}ii", .{ timeData.LL, timeData.cc, timeData.ii, timeData.qm });
     }
 };
 
