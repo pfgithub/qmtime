@@ -6,7 +6,7 @@ const c = @cImport({
 
 const OverflowError = error{OverflowError};
 const EachTick = extern struct {
-    buffer: [*c]c.GtkTextBuffer,
+    label: [*c]c.GtkLabel,
     previi: u8,
     pub const Error = OverflowError;
     fn update(anydata: c.gpointer) callconv(.C) c_int {
@@ -18,27 +18,25 @@ const EachTick = extern struct {
             data.previi = timeNum.ii;
             
             const alloc = std.heap.c_allocator;
-            const formatted = std.fmt.allocPrint(alloc, "{}", .{timeNum}) catch @panic("oom");
+            const formatted = std.fmt.allocPrint0(alloc, "{}", .{timeNum}) catch @panic("oom");
             defer alloc.free(formatted);
             
-            c.gtk_text_buffer_set_text(data.buffer, formatted.ptr, @intCast(c_int, formatted.len));
+            c.gtk_label_set_text(data.label, formatted.ptr);
         }
         return 1;
     }
 };
 
 pub fn constructor(plugin: [*c]c.XfcePanelPlugin) void {
-    var view = c.gtk_text_view_new();
+    var label = c.gtk_label_new(@as([]const u8, "...").ptr);
 
-    var buffer = c.gtk_text_view_get_buffer(gtkTextView(view));
-    c.gtk_text_buffer_set_text(buffer, "Zig! 2", -1);
-    c.gtk_container_add(gtkContainer(plugin), view);
-    c.gtk_widget_show_all(view);
+    c.gtk_container_add(gtkContainer(plugin), label);
+    c.gtk_widget_show_all(label);
 
     var alloc = std.heap.c_allocator;
     var updateData: *EachTick = alloc.create(EachTick) catch @panic("oom");
     updateData.* = .{
-        .buffer = buffer,
+        .label = gtkLabel(label),
         .previi = 0,
     };
 
@@ -46,18 +44,13 @@ pub fn constructor(plugin: [*c]c.XfcePanelPlugin) void {
     var result = c.g_timeout_add(10, EachTick.update, updateData);
 }
 
-// ===== MACRO EXPANSION FOR c.GTK_TEXT_VIEW() and c.GTK_CONTAINER() . These should be able to parse but translate-c doesn't know how yet. I'm guessing it sees too many ((((parenthesis around(((((arguments)), ((((((((and))))))))))))))) isn't sure what to do
-fn gtkTextView(view: [*c]c.GtkWidget) *c.GtkTextView { // c.GTK_TEXT_VIEW
-    return @ptrCast(*c.GtkTextView, c.g_type_check_instance_cast(@ptrCast(*c.GTypeInstance, view), c.gtk_text_view_get_type()));
-}
-
+// ===== MACRO EXPANSION FOR c.GTK_LABEL, c.GTK_CONTAINER
 fn gtkContainer(view: [*c]c.XfcePanelPlugin) *c.GtkContainer {
     return @ptrCast(*c.GtkContainer, c.g_type_check_instance_cast(@ptrCast(*c.GTypeInstance, view), c.gtk_container_get_type()));
 }
-
-// fn gtkType(comptime intype: type, view: var, comptime getType: fn() callconv(.C) c_ulong) *@TypeOf(intype) { // replacement for GTK_TEXT_VIEW macro that has way too many parenthesis
-//     return @ptrCast(*intype, c.g_type_check_instance_cast(@ptrCast(*c.GTypeInstance, view), getType()));
-// }
+fn gtkLabel(view: [*c]c.GtkWidget) *c.GtkLabel {
+    return @ptrCast(*c.GtkLabel, c.g_type_check_instance_cast(@ptrCast(*c.GTypeInstance, view), c.gtk_label_get_type()));
+}
 
 // ========== MACRO EXPANSION FOR XFCE_PANEL_PLUGIN_REGISTER ==========
 // even if zig could parse the macro, how would it add two functions?
