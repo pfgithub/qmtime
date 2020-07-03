@@ -5,13 +5,14 @@ const c = @cImport({
 
 /// get time in ms
 pub fn getTime() u64 {
-    return std.time.milliTimestamp();
+    var time = std.time.milliTimestamp();
+    if(time < 0) time = 0; // if your system time is before the beginning of the universe, too bad.
+    return @intCast(u64, time);
 }
 
 /// get start of day in utc using time.h gmtime/timegm
 pub fn getDayStart(time: u64) u64 {
     const timeSec: c.time_t = @intCast(c.time_t, time / 1000);
-    // @compileLog(@TypeOf(&timeSec)); // this is one way to implement a hover provider in the stage1 compiler. add a @compilelog statement and check the error.
     var timeInfo = c.gmtime(&timeSec);
     timeInfo.*.tm_hour = 0;
     timeInfo.*.tm_min = 0;
@@ -34,8 +35,8 @@ pub const TenHourTime = struct {
     cc: u8,
     ii: u8,
     qm: u16,
-    pub fn format(timeData: *const TenHourTime, comptime fmt: []const u8, options: std.fmt.FormatOptions, context: var, comptime Errors: type, output: fn (@TypeOf(context), []const u8) Errors!void) Errors!void {
-        return std.fmt.format(context, Errors, output, "{:0>2}LL {:0>1}cc {:0>2}ii {:0>3}qm", .{ timeData.LL, timeData.cc, timeData.ii, timeData.qm });
+    pub fn format(timeData: *const TenHourTime, comptime fmt: []const u8, options: std.fmt.FormatOptions, out: var) !void {
+        return std.fmt.format(out, "{:0>2}LL {:0>1}cc {:0>2}ii {:0>3}qm", .{ timeData.LL, timeData.cc, timeData.ii, timeData.qm });
     }
 };
 

@@ -35,13 +35,13 @@ pub fn main() !void {
         Forever,
     } = .Once;
 
-    const stdout = &std.io.getStdOut().outStream().stream;
+    const stdout = std.io.getStdOut().outStream();
 
     {
         var args = std.process.args();
         _ = args.skip();
 
-        var arena = std.heap.ArenaAllocator.init(std.heap.direct_allocator);
+        var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
         defer arena.deinit();
 
         var allocator = &arena.allocator;

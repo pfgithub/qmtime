@@ -6,31 +6,22 @@ const c = @cImport({
 
 const OverflowError = error{OverflowError};
 const EachTick = extern struct {
-    resstr: [100:0]u8,
     buffer: [*c]c.GtkTextBuffer,
     previi: u8,
-    index: u8,
     pub const Error = OverflowError;
-    fn write(data: *align(1) EachTick, bytes: []const u8) Error!void {
-        if (data.index + bytes.len > 100) return Error.OverflowError;
-        std.mem.copy(u8, data.resstr[data.index..], bytes);
-        data.index += @intCast(u8, bytes.len);
-    }
     fn update(anydata: c.gpointer) callconv(.C) c_int {
         var data: *align(1) EachTick = @ptrCast(*align(1) EachTick, anydata);
-        data.index = 0;
         var timeNum = tht.formatTime(tht.tenHourTime(tht.getTime()));
         timeNum.qm = 0;
 
         if (data.previi != timeNum.ii) {
             data.previi = timeNum.ii;
-            std.fmt.format(data, Error, write, "{}", .{timeNum}) catch |e| {
-                std.debug.warn("{}", .{e});
-                const text = "Error!";
-                std.mem.copy(u8, data.resstr[0..100], text);
-                data.index = text.len;
-            };
-            c.gtk_text_buffer_set_text(data.buffer, &data.resstr[0], data.index);
+            
+            const alloc = std.heap.c_allocator;
+            const formatted = std.fmt.allocPrint(alloc, "{}", .{timeNum}) catch @panic("oom");
+            defer alloc.free(formatted);
+            
+            c.gtk_text_buffer_set_text(data.buffer, formatted.ptr, @intCast(c_int, formatted.len));
         }
         return 1;
     }
@@ -44,23 +35,14 @@ pub fn constructor(plugin: [*c]c.XfcePanelPlugin) void {
     c.gtk_container_add(gtkContainer(plugin), view);
     c.gtk_widget_show_all(view);
 
-    var str = [_:0]u8{
-        63, 63, 63, 63, 63, 33, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
-        63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
-        63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
-        63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
-        63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
-        63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
-    };
-    var alloc = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    var updateData: *EachTick = alloc.allocator.create(EachTick) catch std.debug.panic("uh oh!", .{});
+    var alloc = std.heap.c_allocator;
+    var updateData: *EachTick = alloc.create(EachTick) catch @panic("oom");
     updateData.* = .{
-        .resstr = str,
         .buffer = buffer,
         .previi = 0,
-        .index = 0,
     };
 
+    std.debug.warn("panel started\n", .{});
     var result = c.g_timeout_add(10, EachTick.update, updateData);
 }
 
