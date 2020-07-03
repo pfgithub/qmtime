@@ -16,11 +16,11 @@ const EachTick = extern struct {
 
         if (data.previi != timeNum.ii) {
             data.previi = timeNum.ii;
-            
+
             const alloc = std.heap.c_allocator;
             const formatted = std.fmt.allocPrint0(alloc, "{}", .{timeNum}) catch @panic("oom");
             defer alloc.free(formatted);
-            
+
             c.gtk_label_set_text(data.label, formatted.ptr);
         }
         return 1;
