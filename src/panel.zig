@@ -30,13 +30,13 @@ const EachTick = extern struct {
 pub fn constructor(plugin: [*c]c.XfcePanelPlugin) void {
     var label = c.gtk_label_new(@as([]const u8, "...").ptr);
 
-    c.gtk_container_add(gtkContainer(plugin), label);
+    c.gtk_container_add(GTK_CONTAINER(plugin), label);
     c.gtk_widget_show_all(label);
 
     var alloc = std.heap.c_allocator;
     var updateData: *EachTick = alloc.create(EachTick) catch @panic("oom");
     updateData.* = .{
-        .label = gtkLabel(label),
+        .label = GTK_LABEL(label),
         .previi = 0,
     };
 
@@ -45,11 +45,19 @@ pub fn constructor(plugin: [*c]c.XfcePanelPlugin) void {
 }
 
 // ===== MACRO EXPANSION FOR c.GTK_LABEL, c.GTK_CONTAINER
-fn gtkContainer(view: [*c]c.XfcePanelPlugin) *c.GtkContainer {
-    return @ptrCast(*c.GtkContainer, c.g_type_check_instance_cast(@ptrCast(*c.GTypeInstance, view), c.gtk_container_get_type()));
-}
-fn gtkLabel(view: [*c]c.GtkWidget) *c.GtkLabel {
-    return @ptrCast(*c.GtkLabel, c.g_type_check_instance_cast(@ptrCast(*c.GTypeInstance, view), c.gtk_label_get_type()));
+const GTK_LABEL = gtkCast(.Label, .label);
+const GTK_CONTAINER = gtkCast(.Container, .container);
+
+fn gtkCast(comptime name: var, comptime nameLower: var) fn f(view: var) *@field(c, "Gtk" ++ @tagName(name)) {
+    return struct {
+        fn f(view: var) *@field(c, "Gtk" ++ @tagName(name)) {
+            if (@typeInfo(@TypeOf(view)) != .Pointer) @compileError("expected pointer");
+            return @ptrCast(
+                *@field(c, "Gtk" ++ @tagName(name)),
+                c.g_type_check_instance_cast(@ptrCast(*c.GTypeInstance, view), @field(c, "gtk_" ++ @tagName(nameLower) ++ "_get_type")()),
+            );
+        }
+    }.f;
 }
 
 // ========== MACRO EXPANSION FOR XFCE_PANEL_PLUGIN_REGISTER ==========
